@@ -1,129 +1,193 @@
-# Byte-compiled / optimized / DLL files
-__pycache__/
-*.py[cod]
-*$py.class
-
-# C extensions
-*.so
-
-# Distribution / packaging
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-pip-wheel-metadata/
-share/python-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-MANIFEST
-
-# PyInstaller
-#  Usually these files are written by a python script from a template
-#  before PyInstaller builds the exe, so as to inject date/other infos into it.
-*.manifest
-*.spec
-
-# Installer logs
-pip-log.txt
-pip-delete-this-directory.txt
-
-# Unit test / coverage reports
-htmlcov/
-.tox/
-.nox/
-.coverage
-.coverage.*
-.cache
-nosetests.xml
-coverage.xml
-*.cover
-*.py,cover
-.hypothesis/
-.pytest_cache/
-
-# Translations
-*.mo
-*.pot
-
-# Django stuff:
-*.log
-local_settings.py
-db.sqlite3
-db.sqlite3-journal
-
-# Flask stuff:
-instance/
-.webassets-cache
-
-# Scrapy stuff:
-.scrapy
-
-# Sphinx documentation
-docs/_build/
-
-# PyBuilder
-target/
-
-# Jupyter Notebook
-.ipynb_checkpoints
-
-# IPython
-profile_default/
-ipython_config.py
-
-# pyenv
-.python-version
-
-# pipenv
-#   According to pypa/pipenv#598, it is recommended to include Pipfile.lock in version control.
-#   However, in case of collaboration, if having platform-specific dependencies or dependencies
-#   having no cross-platform support, pipenv may install dependencies that don't work, or not
-#   install all needed dependencies.
-#Pipfile.lock
-
-# PEP 582; used by e.g. github.com/David-OConnor/pyflow
-__pypackages__/
-
-# Celery stuff
-celerybeat-schedule
-celerybeat.pid
-
-# SageMath parsed files
-*.sage.py
-
-# Environments
-.env
-.venv
-env/
-venv/
-ENV/
-env.bak/
-venv.bak/
-
-# Spyder project settings
-.spyderproject
-.spyproject
-
-# Rope project settings
-.ropeproject
-
-# mkdocs documentation
-/site
-
-# mypy
-.mypy_cache/
-.dmypy.json
-dmypy.json
-
-# Pyre type checker
-.pyre/
+import random
+storage = 500
+cost = 200
+password = 'qwerty'
+inventory = 0
+ammo = 500
+trash = 0
+def MainMenu():
+    global storage,inventory,ammo
+    print('Добро пожаловать в магазин')
+    print('1 - Купить; 2 - Продать; 3 - Товар; 4 - Инвентарь; 5 - Заработать денег; 6 - Админ меню')
+    choise = input()
+    if choise == '1':
+        return Buy()
+    elif choise == '2':
+        return Sell()
+    elif choise == '3':
+        print('В магазине %s шишек'%storage)
+        return MainMenu()
+    elif choise == '4':
+        print('У вас %s шишек и %s грн'%(inventory,ammo))
+        return MainMenu()
+    elif choise == '5':
+        return Jobs()
+    elif choise == '6':
+        return Void()
+    else:
+        print('Такого пункта нет')
+        return MainMenu()
+def Void():
+    count = 3
+    enter = str()
+    while enter != password:
+        print('Введите пароль для входа')
+        enter = input()
+        if enter == password:
+            print('Вход выполнен успешно!')
+            Apanel()
+        elif enter != password:
+            count -= 1
+            print('У вас осталось %s попыток'%count)
+        if count == 0:
+            print('Попытки кончились')
+            MainMenu()
+def Buy():
+    global storage,inventory,ammo
+    if storage <= 0:
+        print('Товар закончился!')
+        MainMenu()
+    else:
+        print('Введите вес')
+        gr = int(input())
+        total = gr*cost
+        print('Цена: %s. Согласны? Да/Нет'%total)
+        choise = input()
+        if choise == 'Да':
+            if ammo >= total:
+                ammo -= total
+                inventory += gr
+                storage -= gr
+                print('Покушка прошла успешно')
+                MainMenu()
+            else:
+                print('Ошибка. У вас недостаточно денег')
+                MainMenu()
+def Sell():
+    global inventory
+    global storage
+    global ammo
+    print('Введите количество грамм для продажи')
+    gr = int(input())
+    total = gr * 180
+    print('Курс 1г = 180 грн. Вы получите %s'%total)
+    print('Вы согласны? Да/Нет')
+    choise = input()
+    if choise == 'Да':
+        if inventory >= gr:
+            inventory -= gr
+            ammo = ammo + total
+            storage += gr
+            print('Продажа произошло успешно')
+            MainMenu()
+        elif inventory < gr:
+            print('Ошибка. У вас недостаточно шишек')
+            MainMenu()
+        elif ammo < total:
+            print('Ошибка. У вас недостаточно денег')
+            MainMenu()
+    elif choise == 'Нет':
+        MainMenu()
+    else:
+        MainMenu()
+def Jobs():
+    global ammo
+    a = random.randint(1,100)
+    b = random.randint(1,100)
+    sum = a+b
+    big_win = random.randint(100,300)
+    small_win = random.randint(50,150)
+    print('Вы можете испытать удачу и купить большой выигрыш(50 грн). Да/Нет')
+    choise = input()
+    if choise == 'Да':
+        ammo -= 50
+        print('Ваш большой выигрыш за эту капчу - %s грн'%big_win)
+        print('Введите капчу %s + %s = ???'%(a,b))
+        enter = int(input())
+        if enter == sum:
+            print('Вы получили %s грн'%big_win)
+            ammo += big_win
+            MainMenu()
+    elif choise == 'Нет':
+        print('Сумма за введенную капчу - %s грн'%small_win)
+        print('Введите капчу %s + %s = ???'%(a,b))
+        enter = int(input())
+        if enter == sum:
+            print('Вы получили %s грн'%small_win)
+            ammo += small_win
+            MainMenu()
+def Apanel():
+    global storage,cost,trash
+    print('1 - Добавить товар: 2 - Изменить цену товара; 3 - Удалить товар; 4 - Склад(удаленный товар); 5 - Назад')
+    choise = input()
+    if choise == '1':
+        print('Введите количество товара')
+        col = int(input())
+        check = storage + col
+        if storage >= 1000:
+            print('Ошибка. Склад не может перевышать 1000 грамм')
+            Apanel()
+        elif check >= 1000:
+            print('Ошибка. Склад не может перевышать 1000 грамм')
+            Apanel()
+        elif storage < 1000 and check < 1000:
+            storage += col
+            print('Товар добавлен. Сейчас там %s грамм'%storage)
+            Apanel()
+    elif choise == '2':
+        print('Введите цену за 1 грамм')
+        a_cost = int(input())
+        if a_cost >= 501:
+            print('Цена за 1 грамм не может превышать 500 грн')
+            Apanel()
+        elif a_cost <= 149:
+            print('Цена за 1 грамм не может быть меньше 150 грн')
+        else:
+            cost = a_cost
+            print('Цена изменена. Текущая цена %s грн'%cost)
+            Apanel()
+    elif choise == '3':
+        print('Введите сколько товара нужно удалить')
+        del_store = int(input())
+        if del_store > storage:
+            print('Ошибка. Введенное количество превышает имеющиеся количество')
+            Apanel()
+        else:
+            storage -= del_store
+            trash += del_store
+            print('Готово. На складе %s грамм, на продаже %s грамм'%(trash,storage))
+            Apanel()
+    elif choise == '4':
+        Trash()
+    elif choise == '5':
+        MainMenu()
+def Trash():
+    global trash,storage
+    print('1 - Остаток; 2 - Удалить остаток; 3 - Вернуть остаток на продажу; 4 - Назад')
+    choise = input()
+    if choise == '1':
+        print('Осталось %s грамм'%trash)
+        Trash()
+    elif choise == '2':
+        print('Вы уверены что хотите удалить весь остаток? Да/Нет')
+        choise = input()
+        if choise == 'Да':
+            print('Товар удалён')
+            trash = 0
+            Trash()
+        else:
+            Trash()
+    elif choise == '3':
+        print('Введите сколько вернуть')
+        back = int(input())
+        if back > trash:
+            print('Ошибка. Столько нет товара')
+            Trash()
+        else:
+            storage += back
+            trash -= back
+            print('Готово. Осталось %s грамм, на продаже %s грамм'%(trash,storage))
+            Trash()
+    elif choise == '4':
+        Apanel()
+MainMenu()
